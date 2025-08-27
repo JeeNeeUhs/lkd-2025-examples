@@ -12,6 +12,16 @@ all: $(BUILD) $(NAME)
 dump:
 	objdump -D $(NAME) -M intel
 
+out:
+	make re
+	clear
+	./out/link
+
+valgrind:
+	make re
+	clear
+	valgrind ./out/link
+
 $(BUILD):
 	@mkdir -p $(BUILD)
 
@@ -29,4 +39,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re out

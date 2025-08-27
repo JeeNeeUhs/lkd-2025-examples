@@ -1,19 +1,15 @@
 #include "include/link.h"
 
-// Bunu birisi yazdı ama segfault veriyor.
-// Bakacak zamanım olmadı...
-void print_list(struct node* head) {
-    struct node* curr;
-    while(NULL != curr->next) {
-  		printf("Curr node: %p, next: %p, data: %d\n", curr, curr->next, curr->data);
-        curr = curr->next;
-    }
-    return;
+void print_list(t_node* head) { //worked
+	while(head != NULL) {
+		printf("Curr node: %p, next: %p, data: %d\n", head, head->next, head->data);
+		head = head->next;
+	}
+	return;
 }
 
-// Belli değil mi?
-void print_menu() {
-    printf("What do you want to do?\n");
+void print_menu() { //worked
+	printf("What do you want to do?\n");
 	printf("1 -> Print Nodes\n");
 	printf("2 -> Add Node\n");
 	printf("3 -> Remove Node\n");
@@ -22,60 +18,80 @@ void print_menu() {
 	printf("6 -> Change Value\n");
 }
 
-// Program başında listeyi oluşturur
-struct node* init_nodes() {
-    struct node* head;
-    head = (struct node*)malloc(sizeof(struct node));
-    struct node *curr;
-	head->data = NODE_INIT_VAL;
-	curr = head;
+t_node* create_node(int val) { // i am a genius
+	t_node* new_node = (t_node*)malloc(sizeof(t_node));
+	if (NULL == new_node)
+		return NULL;
+	new_node->data = val;
+	new_node->next = NULL;
+	new_node->prev = NULL;
+	return new_node;
+}
 
-	for(int i = 0;i < NODE_INIT_SIZE; i++) {
-		curr->next = (struct node*)malloc(sizeof(struct node));
-		if(0 == i) {
-		    curr->prev = NULL;
-		} else {
-		    curr->next->prev = curr;
-		}
-		curr->data = i;
+t_node* init_nodes() { //rewrite worked
+	t_node* head = NULL;
+	head = create_node(NODE_INIT_VAL);
+	t_node* curr = head;
+
+	for(int i = 0; i < NODE_INIT_SIZE; i++) {
+		curr->next = create_node(NODE_INIT_VAL);
+		if (NULL == curr->next)
+			return head;
+		curr->next->prev = curr;
 		curr = curr->next;
 	}
 	return head;
 }
 
-// Yeni düğüm ekler
-void add_node(struct node* head) {
-    // Get last item
-    while(NULL != head->next) {
-        head = head->next;
-    }
-    head->next = malloc(sizeof(struct node));
-    head->next->prev = head;
-    head->next->data = 0;
+void add_node(t_node* head) { //worked
+	while(NULL != head->next) {
+		head = head->next;
+	}
+	head->next = create_node(0);
+	head->next->prev = head;
+	head->next->data = 0;
 }
 
 // Mevcut düğümü çıkartır
-void remove_node(struct node* curr) {
-    curr->prev->next = curr->next;
-    curr->next->prev = curr->prev;
+t_node* remove_node(t_node* curr) {
+	t_node* temp;
+	if (curr->next == NULL && curr->prev == NULL) {
+		printf("I can not delete my self sry");
+		return curr;
+	} else if (curr->next == NULL) {
+		temp = curr->prev;
+	} else {
+		temp = curr->next;
+	}
+	if (curr->prev)
+		curr->prev->next = curr->next;
+	if (curr->next)
+		curr->next->prev = curr->prev;
+	free(curr); // idk
+	printf("%p",temp);
+	return temp;
 }
 
 // Bir sonraki düğümü döndürür
-struct node* next_node(struct node* curr){
-    return curr->next;
+t_node* next_node(t_node* curr) {
+	if (NULL == curr->next)
+		return curr;
+	return curr->next;
 }
 
 // Bir önceki düğümü döndürür
-struct node* previous_node(struct node* curr){
-    return curr->prev;
+t_node* previous_node(t_node* curr){
+	if (NULL == curr->prev)
+		return curr;
+	return curr->prev;
 }
 
 // Verilen düğümün verisini değiştirir
-void change_value(struct node* curr, int val){
-    curr->data = val;
+void change_value(t_node* curr, int val){
+	curr->data = val;
 }
 
 // Belli değil mi...
-void print_node(struct node* curr) {
-  		printf("Curr Node: %p, next: %p, prev: %p, data: %d\n", curr, curr->next, curr->prev, curr->data);
+void print_node(t_node* curr) {
+		printf("Curr Node: %p, next: %p, prev: %p, data: %d\n", curr, curr->next, curr->prev, curr->data);
 }
